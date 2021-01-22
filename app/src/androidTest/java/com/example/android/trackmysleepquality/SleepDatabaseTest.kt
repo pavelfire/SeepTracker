@@ -67,5 +67,12 @@ class SleepDatabaseTest {
         val tonight = sleepDao.getTonight()
         assertEquals(tonight?.sleepQuality, -1)
     }
+
+    //@Test
+    //@Throws(Exception::class)
+    //fun insertNight(){
+    //    val tonight = sleepDao.getTonight()
+    //    assertEquals(tonight?.sleepQuality, -1)
+    //}
 }
 
