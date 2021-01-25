@@ -19,6 +19,7 @@ package com.example.android.trackmysleepquality.sleeptracker
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
@@ -48,6 +49,38 @@ class SleepTrackerViewModel(
 
     val nightsString = Transformations.map(nights){ nights ->
         formatNights(nights, application.resources)
+    }
+
+    val startButtonVisible = Transformations.map(tonight){
+        null == it
+    }
+
+    //if tonight is a value, the stop should be visible
+    val stopButtonVisible = Transformations.map(tonight){
+        null != it
+    }
+
+    //the clear button should only be visible if there are nights to clear.
+    val clearButtonVisible = Transformations.map(nights){
+        it?.isNotEmpty()
+    }
+
+    private var _showSnackbarEvent = MutableLiveData<Boolean>()
+
+    val showSnackBarEvent: LiveData<Boolean>
+        get() = _showSnackbarEvent
+
+    fun doneShowingSnackbar(){
+        _showSnackbarEvent.value = false
+    }
+
+    private val _navigateToSleepQuality = MutableLiveData<SleepNight>()
+
+    val navigateToSleepQulity: LiveData<SleepNight>
+        get() = _navigateToSleepQuality
+
+    fun doneNavigating(){
+        _navigateToSleepQuality.value = null
     }
 
     init{
@@ -90,11 +123,18 @@ class SleepTrackerViewModel(
     fun onStopTracking(){
         Log.i("MyLog", "on start onStopTracking()")
         uiScope.launch{
+            //In Kotlin, the return@label syntax is used for specifying which function among
+            //several nested ones this statement returns from.
+            //In this case, we are specifying to return from launch(),
+            //not the lambda.
             val oldNight = tonight.value ?: return@launch
 
+            //Update the night in the database to add the end time.
             oldNight.endTimeMilli = System.currentTimeMillis()
 
             update(oldNight)
+
+            _navigateToSleepQuality.value = oldNight
             Log.i("MyLog", "in launch onStopTracking()")
         }
         Log.i("MyLog", "on end onStopTracking()")
@@ -108,8 +148,13 @@ class SleepTrackerViewModel(
 
     fun onClear(){
         uiScope.launch {
+            //clear the database table
             clear()
+
+            //and clear tonight since it's no longer in the database
             tonight.value = null
+
+            _showSnackbarEvent.value = true
         }
     }
 
