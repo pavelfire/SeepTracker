@@ -35,7 +35,8 @@ class SleepNightAdapter : RecyclerView.Adapter<TextItemViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TextItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.support_simple_spinner_dropdown_item, parent, false) as TextView
+        val view = layoutInflater.inflate(R.layout.support_simple_spinner_dropdown_item,
+         parent, false) as TextView
         return TextItemViewHolder(view)
     }
 }
