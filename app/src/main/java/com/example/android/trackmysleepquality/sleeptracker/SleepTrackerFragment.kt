@@ -72,7 +72,7 @@ class SleepTrackerFragment : Fragment() {
         binding.setLifecycleOwner (this)
 
         //Add an Observer on the state variable for Navigating when STOP button is pressed.
-        sleepTrackerViewModel.navigateToSleepQulity.observe(this, Observer {
+        sleepTrackerViewModel.navigateToSleepQulity.observe(viewLifecycleOwner, Observer {
             night ->
             night?.let{
                 //We need to get the navController from this, because button is not ready, and it
@@ -88,7 +88,7 @@ class SleepTrackerFragment : Fragment() {
             }
         })
 
-        sleepTrackerViewModel.showSnackBarEvent.observe(this, Observer{
+        sleepTrackerViewModel.showSnackBarEvent.observe(viewLifecycleOwner, Observer{
             if(it == true) {//Observed state is true.
                 Snackbar.make(
                         activity!!.findViewById(android.R.id.content),
