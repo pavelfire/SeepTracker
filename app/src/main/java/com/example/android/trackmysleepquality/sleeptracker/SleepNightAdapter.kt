@@ -1,33 +1,34 @@
 package com.example.android.trackmysleepquality.sleeptracker
 
-import android.content.res.Resources
-import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.trackmysleepquality.R
-import com.example.android.trackmysleepquality.TextItemViewHolder
 import com.example.android.trackmysleepquality.convertDurationToFormatted
 import com.example.android.trackmysleepquality.convertNumericQualityToString
 import com.example.android.trackmysleepquality.database.SleepNight
+import com.example.android.trackmysleepquality.databinding.ListItemSleepNightBinding
+
 //An adapter that provides a list of [SllepNight] to a RecyclerView.
 //Setting [data] will cause the displayed list to update.
-class SleepNightAdapter : RecyclerView.Adapter<SleepNightAdapter.ViewHolder>(){
-    var data = listOf<SleepNight>()
-    set(value){
-        field = value
-        notifyDataSetChanged()
-    }
+class SleepNightAdapter : ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(SleepNightDiffCallback()){
+    //List of SleepNight that this adapter is adapting to be used by RecyclerView
+    //var data = listOf<SleepNight>()
+    //set(value){
+    //    field = value
+        //tell RecyclerView that the entire list has been updated
+        //this will cause every item to redraw, and is expencive
+    //    notifyDataSetChanged()
+    //}
     //Called when RecyclerView needs to know the size of the list.
-    override fun getItemCount() = data.size
+    //override fun getItemCount() = data.size
     //Called when RecyclerView needs to show an item.
     //The ViewHolder passed may be recycled, so make sure that this sets any properties that
     //may have been set previously.
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)//data[position]
         holder.bind(item)
         /*
         if(item.sleepQuality <= 1) {
@@ -49,22 +50,17 @@ class SleepNightAdapter : RecyclerView.Adapter<SleepNightAdapter.ViewHolder>(){
     //A ViewHolder holds a view for the [RecyclerView] as well as providing additional information
     //to the RecyclerView such as where on the screen it was last drawn during scrolling.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val view = layoutInflater.inflate(R.layout.list_item_sleep_night,
-         parent, false)
-        return ViewHolder(view)
+
+        return ViewHolder.from(parent)
     }
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val sleepLength: TextView = itemView.findViewById(R.id.sleep_length)
-        val quality: TextView = itemView.findViewById(R.id.quality_string)
-        val qualityImage: ImageView = itemView.findViewById(R.id.quality_image)
+    class ViewHolder private constructor(val binding: ListItemSleepNightBinding): RecyclerView.ViewHolder(binding.root){
 
         fun bind(item: SleepNight) {
             val res = itemView.context.resources
-            sleepLength.text = convertDurationToFormatted(item.startTimeMilli, item.endTimeMilli, res)
-            quality.text = convertNumericQualityToString(item.sleepQuality, res)
-            qualityImage.setImageResource(when (item.sleepQuality) {
+            binding.sleepLength.text = convertDurationToFormatted(item.startTimeMilli, item.endTimeMilli, res)
+            binding.qualityString.text = convertNumericQualityToString(item.sleepQuality, res)
+            binding.qualityImage.setImageResource(when (item.sleepQuality) {
                 0 -> R.drawable.ic_sleep_0
                 1 -> R.drawable.ic_sleep_1
                 2 -> R.drawable.ic_sleep_2
@@ -74,5 +70,23 @@ class SleepNightAdapter : RecyclerView.Adapter<SleepNightAdapter.ViewHolder>(){
                 else -> R.drawable.ic_sleep_active
             })
         }
+        companion object {
+            fun from(parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+
+                val binding = ListItemSleepNightBinding.inflate(layoutInflater, parent, false)
+                return ViewHolder(binding)
+            }
+        }
     }
+}
+class SleepNightDiffCallback : DiffUtil.ItemCallback<SleepNight>(){
+    override fun areItemsTheSame(oldItem: SleepNight, newItem: SleepNight): Boolean {
+        return oldItem.nightId == newItem.nightId
+    }
+
+    override fun areContentsTheSame(oldItem: SleepNight, newItem: SleepNight): Boolean {
+        return oldItem == newItem
+    }
+
 }
