@@ -71,12 +71,14 @@ class SleepTrackerFragment : Fragment() {
         })
         binding.sleepList.adapter = adapter
         //sleepTrackerViewModel.navigateToSleepQulity //----------what is this mistake
-        sleepTrackerViewModel.navigateToSleepDataQuality.observe(this, Observer { nightId ->
-            night?.let {
+        sleepTrackerViewModel.navigateToSleepDataQuality.observe(viewLifecycleOwner, Observer { night ->
+            night?.let{
                 this.findNavController().navigate(
                         SleepTrackerFragmentDirections
-                                .actionSleepTrackerFragmentToSleepDatailFragment(night))
+                                .actionSleepTrackerFragmentToSleepDetailFragment(night))
+                //sleepTrackerViewModel.doneNavigating()
                 sleepTrackerViewModel.onSleepDataQualityNavigated()
+
             }
         })
 
@@ -90,7 +92,7 @@ class SleepTrackerFragment : Fragment() {
         binding.setLifecycleOwner (this)
 
         //Add an Observer on the state variable for Navigating when STOP button is pressed.
-        sleepTrackerViewModel.navigateToSleepQulity.observe(viewLifecycleOwner, Observer {
+        sleepTrackerViewModel.navigateToSleepQuality.observe(viewLifecycleOwner, Observer {
             night ->
             night?.let{
                 //We need to get the navController from this, because button is not ready, and it
