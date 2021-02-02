@@ -17,6 +17,7 @@
 package com.example.android.trackmysleepquality.sleeptracker
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,14 +71,14 @@ class SleepTrackerFragment : Fragment() {
             sleepTrackerViewModel.onSleepNightClicked(nightId)
         })
         binding.sleepList.adapter = adapter
-        //sleepTrackerViewModel.navigateToSleepQulity //----------what is this mistake
+
         sleepTrackerViewModel.navigateToSleepDataQuality.observe(viewLifecycleOwner, Observer { night ->
             night?.let{
-                this.findNavController().navigate(
-                        SleepTrackerFragmentDirections
-                                .actionSleepTrackerFragmentToSleepDetailFragment(night))
+                //this.findNavController().navigate(
+                       // SleepTrackerFragmentDirections
+                                //.actionSleepTrackerFragmentToSleepDetailFragment(night))
                 //sleepTrackerViewModel.doneNavigating()
-                sleepTrackerViewModel.onSleepDataQualityNavigated()
+               // sleepTrackerViewModel.onSleepDataQualityNavigated()
 
             }
         })
@@ -85,6 +86,11 @@ class SleepTrackerFragment : Fragment() {
 
         sleepTrackerViewModel.nights.observe(viewLifecycleOwner, Observer{
             it?.let{
+
+                val myRub = binding.etRub.text.toString().toLong()
+                Log.d("MyLog", "myRub = " + myRub)
+                sleepTrackerViewModel.update(myRub)
+
                 adapter.submitList(it)
             }
         })
@@ -118,6 +124,8 @@ class SleepTrackerFragment : Fragment() {
                 sleepTrackerViewModel.doneShowingSnackbar()
             }
         })
+
+
 
         return binding.root
     }

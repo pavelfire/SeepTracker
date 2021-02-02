@@ -26,7 +26,7 @@ import com.example.android.trackmysleepquality.database.SleepDatabaseDao
 import com.example.android.trackmysleepquality.database.SleepNight
 import com.example.android.trackmysleepquality.formatNights
 import kotlinx.coroutines.*
-
+//https://stackoverflow.com/questions/50824330/how-to-pass-edittext-value-to-viewmodel-and-livedata-kotlin
 /**
  * ViewModel for SleepTrackerFragment.
  */
@@ -107,6 +107,7 @@ class SleepTrackerViewModel(
         Log.i("MyLog", "on start onStartTracking()")
         uiScope.launch {
             val newNight = SleepNight()
+
             insert(newNight)
             tonight.value = getTonightFromDatabase()
             Log.i("MyLog", "in launch onStartTracking()")
@@ -172,6 +173,12 @@ class SleepTrackerViewModel(
         _navigateToSleepDataQuality.value = id
     }
 
+    private var _rubLi = MutableLiveData<Long>()
+    val rubLi: LiveData<Long>
+        get() = _rubLi
+    fun update(rubL: Long){
+        _rubLi.value = rubL
+    }
 
 }
 
