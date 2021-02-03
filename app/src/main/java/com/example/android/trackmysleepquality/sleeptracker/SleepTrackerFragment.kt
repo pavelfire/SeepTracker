@@ -74,11 +74,11 @@ class SleepTrackerFragment : Fragment() {
 
         sleepTrackerViewModel.navigateToSleepDataQuality.observe(viewLifecycleOwner, Observer { night ->
             night?.let{
-                //this.findNavController().navigate(
-                       // SleepTrackerFragmentDirections
-                                //.actionSleepTrackerFragmentToSleepDetailFragment(night))
-                //sleepTrackerViewModel.doneNavigating()
-               // sleepTrackerViewModel.onSleepDataQualityNavigated()
+                this.findNavController().navigate(
+                        SleepTrackerFragmentDirections
+                                .actionSleepTrackerFragmentToSleepDetailFragment(night))
+                sleepTrackerViewModel.doneNavigating()
+                sleepTrackerViewModel.onSleepDataQualityNavigated()
 
             }
         })
@@ -91,7 +91,7 @@ class SleepTrackerFragment : Fragment() {
                 Log.d("MyLog", "myRub = " + myRub)
                 sleepTrackerViewModel.update(myRub)
 
-                adapter.submitList(it)
+                adapter.addHeaderAndSubmitList(it)
             }
         })
 
@@ -124,8 +124,6 @@ class SleepTrackerFragment : Fragment() {
                 sleepTrackerViewModel.doneShowingSnackbar()
             }
         })
-
-
 
         return binding.root
     }
